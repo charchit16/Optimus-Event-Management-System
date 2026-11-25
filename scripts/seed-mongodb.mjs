@@ -1,0 +1,379 @@
+// scripts/seed-mongodb.mjs
+// Standalone script to populate local MongoDB for Optimus
+import { MongoClient } from "mongodb";
+
+const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/optimus";
+const dbName = "optimus";
+
+const users = [
+  {
+    id: "u_charchit_001",
+    uuid: "u_charchit_001",
+    email: "charchitas8188@gmail.com",
+    password: "admin123",
+    name: "Charchit (Admin)",
+    full_name: "Charchit (Admin)",
+    role: "admin",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "u_admin_001",
+    uuid: "u_admin_001",
+    email: "admin@optimus.com",
+    password: "admin123",
+    name: "System Admin",
+    full_name: "System Admin",
+    role: "admin",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "u_org_001",
+    uuid: "u_org_001",
+    email: "organizer@optimus.com",
+    password: "organizer123",
+    name: "Alex Rivera",
+    full_name: "Alex Rivera",
+    role: "organizer",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "u_user_001",
+    uuid: "u_user_001",
+    email: "aerospacebombay1@gmail.com",
+    password: "user123",
+    name: "Archit Singh",
+    full_name: "Archit Singh",
+    role: "user",
+    created_at: new Date().toISOString(),
+  },
+];
+
+const profiles = [
+  {
+    id: "u_charchit_001",
+    uuid: "u_charchit_001",
+    email: "charchitas8188@gmail.com",
+    name: "Charchit (Admin)",
+    full_name: "Charchit (Admin)",
+    role_type: "admin",
+    avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=Charchit",
+    phone_number: "+91 9876543210",
+    organisation_id: "org_001",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "u_admin_001",
+    uuid: "u_admin_001",
+    email: "admin@optimus.com",
+    name: "System Admin",
+    full_name: "System Admin",
+    role_type: "admin",
+    avatar_url: "https://api.dicebear.com/7.x/bottts/svg?seed=Admin",
+    phone_number: "+91 9876543210",
+    organisation_id: "org_001",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "u_org_001",
+    uuid: "u_org_001",
+    email: "organizer@optimus.com",
+    name: "Alex Rivera",
+    full_name: "Alex Rivera",
+    role_type: "organizer",
+    avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+    phone_number: "+91 9876543211",
+    organisation_id: "org_002",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "u_user_001",
+    uuid: "u_user_001",
+    email: "aerospacebombay1@gmail.com",
+    name: "Archit Singh",
+    full_name: "Archit Singh",
+    role_type: "user",
+    avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Archit",
+    phone_number: "+91 9876543212",
+    organisation_id: null,
+    created_at: new Date().toISOString(),
+  },
+];
+
+const organizations = [
+  {
+    id: "org_001",
+    name: "Cyber Security Society",
+    description: "The premier student tech & ethical hacking community.",
+    avatar_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&auto=format&fit=crop&q=60",
+    phone_number: "+91 9998887771",
+    team_members: ["u_admin_001"],
+    owner_id: "u_admin_001",
+    status: "active",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "org_002",
+    name: "Robotics & AI Guild",
+    description: "Building the autonomous future through hardware and software innovation.",
+    avatar_url: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=200&auto=format&fit=crop&q=60",
+    phone_number: "+91 9998887772",
+    team_members: ["u_org_001"],
+    owner_id: "u_org_001",
+    status: "active",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "org_003",
+    name: "Design & Cultural Club",
+    description: "Fostering creativity, UI/UX aesthetics, and interactive arts.",
+    avatar_url: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=200&auto=format&fit=crop&q=60",
+    phone_number: "+91 9998887773",
+    team_members: [],
+    owner_id: "u_org_001",
+    status: "active",
+    created_at: new Date().toISOString(),
+  },
+];
+
+const now = new Date();
+const inDays = (d) => new Date(now.getTime() + d * 24 * 60 * 60 * 1000).toISOString();
+
+const events = [
+  {
+    id: "ev_001",
+    title: "Optimus Hackathon 2026",
+    description: "36-hour multi-track national hackathon focused on AI, Web3, and Open Source. Build groundbreaking prototypes, collaborate with passionate engineers, and win prizes!",
+    category: "Hackathon",
+    location: "Main Campus Auditorium & Virtual Discord",
+    organizer_name: "Cyber Security Society",
+    start_date: inDays(4),
+    end_date: inDays(6),
+    status: "upcoming",
+    ticket_price: 0,
+    is_paid: false,
+    max_participants: 500,
+    banner_url: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&auto=format&fit=crop&q=80",
+    contact_email: "hack@optimus.com",
+    contact_phone: "+91 9876543210",
+    created_by: "u_admin_001",
+    organisation_id: "org_001",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "ev_002",
+    title: "AI & Autonomous Systems Summit",
+    description: "Annual conference gathering top researchers and practitioners in deep learning, LLMs, and robotics. Includes interactive demonstrations, keynotes, and industry panels.",
+    category: "Conference",
+    location: "Hall B, Technology Innovation Center",
+    organizer_name: "Robotics & AI Guild",
+    start_date: inDays(12),
+    end_date: inDays(13),
+    status: "upcoming",
+    ticket_price: 499,
+    is_paid: true,
+    max_participants: 300,
+    banner_url: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&auto=format&fit=crop&q=80",
+    contact_email: "summit@optimus.com",
+    contact_phone: "+91 9876543211",
+    created_by: "u_org_001",
+    organisation_id: "org_002",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "ev_003",
+    title: "Cyber Defense CTF Challenge",
+    description: "Capture The Flag competition covering cryptography, reverse engineering, binary exploitation, and cloud security. Open to beginners and seasoned hackers alike.",
+    category: "Competition",
+    location: "Computer Lab 4",
+    organizer_name: "Cyber Security Society",
+    start_date: inDays(18),
+    end_date: inDays(19),
+    status: "upcoming",
+    ticket_price: 0,
+    is_paid: false,
+    max_participants: 200,
+    banner_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&auto=format&fit=crop&q=80",
+    contact_email: "ctf@optimus.com",
+    contact_phone: "+91 9876543210",
+    created_by: "u_admin_001",
+    organisation_id: "org_001",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "ev_004",
+    title: "UI/UX & Product Design Masterclass",
+    description: "Hands-on workshop on design systems, Figma workflows, and modern aesthetic micro-interactions for modern web applications.",
+    category: "Workshop",
+    location: "Studio 101 & Zoom Live",
+    organizer_name: "Design & Cultural Club",
+    start_date: inDays(25),
+    end_date: inDays(25),
+    status: "upcoming",
+    ticket_price: 199,
+    is_paid: true,
+    max_participants: 150,
+    banner_url: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=1200&auto=format&fit=crop&q=80",
+    contact_email: "design@optimus.com",
+    contact_phone: "+91 9876543213",
+    created_by: "u_org_001",
+    organisation_id: "org_003",
+    created_at: new Date().toISOString(),
+  },
+];
+
+const formFields = [
+  {
+    id: "f_001",
+    event_id: "ev_001",
+    field_label: "Full Name",
+    field_name: "Name",
+    field_type: "text",
+    is_required: true,
+    order_index: 0,
+  },
+  {
+    id: "f_002",
+    event_id: "ev_001",
+    field_label: "Email Address",
+    field_name: "Email",
+    field_type: "email",
+    is_required: true,
+    order_index: 1,
+  },
+  {
+    id: "f_003",
+    event_id: "ev_001",
+    field_label: "Phone Number",
+    field_name: "Phone",
+    field_type: "tel",
+    is_required: true,
+    order_index: 2,
+  },
+  {
+    id: "f_004",
+    event_id: "ev_001",
+    field_label: "College / University / Company",
+    field_name: "Institution",
+    field_type: "text",
+    is_required: false,
+    order_index: 3,
+  },
+  {
+    id: "f_005",
+    event_id: "ev_002",
+    field_label: "Full Name",
+    field_name: "Name",
+    field_type: "text",
+    is_required: true,
+    order_index: 0,
+  },
+  {
+    id: "f_006",
+    event_id: "ev_002",
+    field_label: "Email Address",
+    field_name: "Email",
+    field_type: "email",
+    is_required: true,
+    order_index: 1,
+  },
+  {
+    id: "f_007",
+    event_id: "ev_002",
+    field_label: "Phone Number",
+    field_name: "Phone",
+    field_type: "tel",
+    is_required: true,
+    order_index: 2,
+  },
+];
+
+const posts = [
+  {
+    id: "post_001",
+    caption: "🚀 Optimus Hackathon 2026 registrations are now officially live! Over ₹2,00,000 in prizes and mentorship from top industry leaders. Check the events page to sign up!",
+    hashtags: "#Hackathon #Coding #Innovation #AI",
+    post_image_url: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80",
+    uuid: "u_admin_001",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "post_002",
+    caption: "Excited to reveal our keynote speakers for the upcoming AI Summit! Join us in Hall B for inspiring sessions on autonomous systems and transformer models.",
+    hashtags: "#AI #Robotics #MachineLearning",
+    post_image_url: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80",
+    uuid: "u_org_001",
+    created_at: new Date().toISOString(),
+  },
+];
+
+const registrations = [
+  {
+    id: "reg_001",
+    event_id: "ev_001",
+    user_id: "u_user_001",
+    ticket_uid: "OPT-HACK-84920",
+    form_data: { Name: "John Doe", Email: "user@optimus.com", Phone: "9876543212" },
+    is_paid: false,
+    status: "free",
+    check_in: false,
+    registration_date: new Date().toISOString(),
+    events: {
+      id: "ev_001",
+      title: "Optimus Hackathon 2026",
+      start_date: inDays(4),
+      banner_url: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&auto=format&fit=crop&q=80",
+    },
+    profiles: {
+      email: "user@optimus.com",
+      name: "John Doe",
+    },
+  },
+];
+
+async function seed() {
+  console.log(`Connecting to MongoDB at: ${uri}...`);
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    console.log("Connected successfully to MongoDB server.");
+    const db = client.db(dbName);
+
+    console.log(`Populating database "${dbName}" with initial collections...`);
+
+    // Reset and seed collections
+    const collections = [
+      { name: "users", data: users },
+      { name: "profiles", data: profiles },
+      { name: "organizations", data: organizations },
+      { name: "events", data: events },
+      { name: "event_form_fields", data: formFields },
+      { name: "posts", data: posts },
+      { name: "event_registrations", data: registrations },
+    ];
+
+    for (const { name, data } of collections) {
+      const coll = db.collection(name);
+      await coll.deleteMany({});
+      if (data.length > 0) {
+        await coll.insertMany(data);
+      }
+      console.log(`  ✓ Collection "${name}": seeded ${data.length} documents.`);
+    }
+
+    console.log("\n=======================================================");
+    console.log("🎉 MongoDB Seeding Complete!");
+    console.log(`Database: "${dbName}" in MongoDB Compass.`);
+    console.log("Sample accounts created:");
+    console.log("  • Admin:     admin@optimus.com     / admin123");
+    console.log("  • Organizer: organizer@optimus.com / organizer123");
+    console.log("  • Attendee:  user@optimus.com      / user123");
+    console.log("=======================================================\n");
+  } catch (err) {
+    console.error("Seeding failed:", err);
+  } finally {
+    await client.close();
+  }
+}
+
+seed();
